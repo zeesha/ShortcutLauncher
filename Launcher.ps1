@@ -2364,7 +2364,20 @@ foreach ($c in $focusables) {
     if ($null -ne $c) { $c.Add_GotFocus($keepFocus) }
 }
 
-$searchBox.Add_TextChanged({ Update-Results $script:searchBox.Text })
+# ---------------------------------------------------------------- debounce timer
+$script:searchTimer = New-Object System.Windows.Forms.Timer
+$script:searchTimer.Interval = 300  # 150
+$script:searchTimer.Add_Tick({
+    $script:searchTimer.Stop()
+    Update-Results $script:searchBox.Text
+})
+
+$searchBox.Add_TextChanged({
+    $script:searchTimer.Stop()
+    $script:searchTimer.Start()
+})
+
+
 $searchBox.Add_KeyDown({
     param($sender, $e)
     $lb = $script:listBox
@@ -2427,6 +2440,13 @@ $form.Add_KeyDown({
         $box.Focus()
     } elseif ($e.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
         $e.SuppressKeyPress = $true
+        
+        # Flush the debounce timer immediately if the user hits Enter fast
+        if ($script:searchTimer.Enabled) {
+            $script:searchTimer.Stop()
+            Update-Results $script:searchBox.Text
+        }
+
         if ($script:searchBox.Text.Length -gt 0) {
             Invoke-Selected -Item (Get-SelectedItem)
         }
@@ -2518,6 +2538,10 @@ while (-not $form.IsDisposed) {
 }
 
 # ---------------------------------------------------------------- cleanup
+if ($script:searchTimer) {
+    $script:searchTimer.Stop()
+    $script:searchTimer.Dispose()
+}
 if ($script:RestoreHook) {
     try { $script:RestoreHook.ReleaseHandle() } catch { }
 }
