@@ -2,6 +2,11 @@
 
 A fast, keyboard-first launcher for Windows. Indexes desktop shortcuts, taskbar pins, Start-menu entries, UWP apps, System32 tools, Settings pages, and more — all searchable from a single hotkey.
 
+| Main Window | Settings Window |
+| :---: | :---: |
+| ![Main Window](Screenshot_main.jpg) | ![Settings Window](Screenshot_settings.jpg) |
+
+
 ## Features
 
 - **Advanced Search**: Case-insensitive by default, with toggles for **Match Case** (`Aa`), **Whole Word** (`ab`), and **Regex** (`.*`).
@@ -39,7 +44,7 @@ A fast, keyboard-first launcher for Windows. Indexes desktop shortcuts, taskbar 
 | **Enter** | Launch the selected item |
 | **Esc** | Clear the search prompt |
 | **F1** | Open Help |
-| **F2** | Open Setup |
+| **F2** | Open Settings |
 | **F3** | Toggle desktop icons visibility |
 | **F4** | Toggle voice input |
 | **F5** | Refresh shortcut index |

@@ -3,7 +3,7 @@
     AppListening = "快捷启动器 - 正在聆听 (按 F4 停止)"
     AppFatalError = "快捷启动器 - 致命错误"
     
-    SetupTitle = "快捷启动器 - 设置"
+    SettingsTitle = "快捷启动器 - 设置"
     HelpTitle = "快捷启动器 - 帮助"
     
     StatusIndexed = "已索引 {0} 个快捷方式"
@@ -45,7 +45,7 @@
     KeyAltF4 = "Alt+F4"
     ActAltF4 = "关闭窗口"
 
-    # Setup Dialog
+    # Settings Dialog
     SecCollections = "采集来源"
     ColDesktop = "桌面快捷方式"
     ColTaskbar = "任务栏固定快捷方式"
@@ -74,7 +74,7 @@
     UILangSystem = "跟随系统"
     UILangRestart = "界面语言已更改。请重启快捷启动器以使更改生效。"
 
-    TooltipSetup = "设置"
+    TooltipSettings = "设置"
     TooltipCase = "区分大小写"
     TooltipWord = "全字匹配"
     TooltipRegex = "使用正则表达式"

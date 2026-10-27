@@ -3,7 +3,7 @@
     AppListening = "ショートカットランチャー - 音声入力中 (F4で停止)"
     AppFatalError = "ショートカットランチャー - 致命的なエラー"
     
-    SetupTitle = "ショートカットランチャー - 設定"
+    SettingsTitle = "ショートカットランチャー - 設定"
     HelpTitle = "ショートカットランチャー - ヘルプ"
     
     StatusIndexed = "{0} 個のショートカットが登録されています"
@@ -45,7 +45,7 @@
     KeyAltF4 = "Alt+F4"
     ActAltF4 = "ウィンドウを閉じる"
 
-    # Setup Dialog
+    # Settings Dialog
     SecCollections = "コレクション"
     ColDesktop = "デスクトップのショートカット"
     ColTaskbar = "タスクバーにピン留めされたショートカット"
@@ -74,7 +74,7 @@
     UILangSystem = "システムデフォルト"
     UILangRestart = "UI言語が変更されました。変更を反映するにはショートカットランチャーを再起動してください。"
 
-    TooltipSetup = "設定"
+    TooltipSettings = "設定"
     TooltipCase = "大文字と小文字を区別"
     TooltipWord = "単語単位で検索"
     TooltipRegex = "正規表現を使用"

@@ -3,7 +3,7 @@
     AppListening = "Shortcut Launcher - listening (F4 to stop)"
     AppFatalError = "Shortcut Launcher - fatal error"
     
-    SetupTitle = "Shortcut Launcher - Setup"
+    SettingsTitle = "Shortcut Launcher - Settings"
     HelpTitle = "Shortcut Launcher - Help"
     
     StatusIndexed = "{0} shortcuts indexed"
@@ -35,7 +35,7 @@
     KeyF1 = "F1"
     ActF1 = "open this Help"
     KeyF2 = "F2"
-    ActF2 = "open Setup"
+    ActF2 = "open Settings"
     KeyF3 = "F3"
     ActF3 = "toggle desktop icons"
     KeyF4 = "F4"
@@ -45,7 +45,7 @@
     KeyAltF4 = "Alt+F4"
     ActAltF4 = "close the window"
 
-    # Setup Dialog
+    # Settings Dialog
     SecCollections = "Collections"
     ColDesktop = "Desktop shortcuts"
     ColTaskbar = "Taskbar pinned shortcuts"
@@ -74,7 +74,7 @@
     UILangSystem = "System Default"
     UILangRestart = "UI language changed. Please restart Shortcut Launcher for the changes to take effect."
     
-    TooltipSetup = "Setup"
+    TooltipSettings = "Settings"
     TooltipCase = "Match Case"
     TooltipWord = "Match Whole Word"
     TooltipRegex = "Use Regular Expression"

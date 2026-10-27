@@ -3,7 +3,7 @@
     AppListening = "শর্টকাট লঞ্চার - শুনছে (থামাতে F4)"
     AppFatalError = "শর্টকাট লঞ্চার - মারাত্মক ত্রুটি"
     
-    SetupTitle = "শর্টকাট লঞ্চার - সেটআপ"
+    SettingsTitle = "শর্টকাট লঞ্চার - সেটআপ"
     HelpTitle = "শর্টকাট লঞ্চার - সহায়তা"
     
     StatusIndexed = "{0}টি শর্টকাট ইনডেক্স করা হয়েছে"
@@ -44,7 +44,7 @@
     KeyAltF4 = "Alt+F4"
     ActAltF4 = "উইন্ডো বন্ধ করুন"
 
-    # Setup Dialog
+    # Settings Dialog
     SecCollections = "সংগ্রহ"
     ColDesktop = "ডেস্কটপ শর্টকাট"
     ColTaskbar = "টাস্কবার পিন করা শর্টকাট"
@@ -73,7 +73,7 @@
     UILangSystem = "সিস্টেম ডিফল্ট"
     UILangRestart = "UI ভাষা পরিবর্তন হয়েছে। পরিবর্তনগুলি কার্যকর করতে শর্টকাট লঞ্চার পুনরায় চালু করুন।"
     
-    TooltipSetup = "সেটআপ"
+    TooltipSettings = "সেটআপ"
     TooltipCase = "কেস মিলান"
     TooltipWord = "পূর্ণ শব্দ মিলান"
     TooltipRegex = "রেগুলার এক্সপ্রেশন ব্যবহার করুন"

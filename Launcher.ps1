@@ -47,7 +47,7 @@
       Search treats both the primary name and AltNames with the same
       ranking; the primary name is preferred on ties. Voice grammar is
       built from both lists as well. Alt-name (including the shortcut
-      Description field) participation is toggleable in Setup.
+      Description field) participation is toggleable in Settings.
 
     * Extra launch sources beyond Desktop / Taskbar / Start menu:
          - %APPDATA% and %ProgramData% Start Menu\Programs\**\*.lnk
@@ -58,23 +58,23 @@
          - Curated ms-settings: URIs (no public enumeration API exists)
       Sources are collected in priority order so dedup first-wins keeps
       the more specific record (e.g. a real Desktop shortcut wins over a
-      same-named App Paths entry). Each source can be disabled in Setup.
+      same-named App Paths entry). Each source can be disabled in Settings.
 
     * Appearance. Theme has three options: 'Light', 'Dark', 'System' (follows the
       Windows app theme via HKCU\...\Themes\Personalize\AppsUseLightTheme).
       Default is 'System'. Opacity is a double in [0.3, 1.0], default 0.9; the
-      slider in Setup previews live on the parent form and reverts on
-      Cancel. Changing either in Setup takes effect immediately without
+      slider in Settings previews live on the parent form and reverts on
+      Cancel. Changing either in Settings takes effect immediately without
       a restart: Apply-Theme swaps $script:colors and recolors the live
       controls (the search underline and the owner-drawn list read
       $script:colors at paint time, so Invalidate is enough); Apply-
-      Opacity clamps and assigns $script:form.Opacity. The Setup dialog
+      Opacity clamps and assigns $script:form.Opacity. The Settings dialog
       itself stays opaque and uses system-native controls, so it
       follows the OS theme rather than the launcher's palette.
 
     * Settings. Options are stored at
       %LOCALAPPDATA%\ShortcutLauncher\settings.json. A missing or
-      unreadable file falls back to defaults. The Setup dialog (button
+      unreadable file falls back to defaults. The Settings dialog (button
       at the right of the search bar) edits collections, alt-name
       search, voice language, theme, and opacity. OK saves the file,
       applies theme + opacity, rebuilds the index, and re-initializes
@@ -83,7 +83,7 @@
 
     * Localization. UI text is loaded using Import-LocalizedData from
       Strings.psd1 and language-specific subfolders (e.g., zh-CN, ja-JP).
-      The fallback is English. Changing the UI language in Setup
+      The fallback is English. Changing the UI language in Settings
       prompts the user to restart the application.
 
     * Logging. All events that matter (startup, settings load/save,
@@ -131,7 +131,7 @@
                   the full name, window stays open
       Esc         clear the prompt
       F1          open Help
-      F2          open Setup
+      F2          open Settings
       F3          toggle desktop icons
       F4          toggle voice input
       F5          refresh index (re-scan shortcuts)
@@ -336,25 +336,36 @@ function Get-LocalizedStrings {
         [string]$Directory
     )
 
-    # Get Windows UI culture and system culture
+    # 1. Check the user's saved setting first
+    $uiLangSetting = if ($script:Settings -and $script:Settings.UILanguage) { $script:Settings.UILanguage } else { 'System' }
+
+    $candidates = @()
+    
+    # If the user explicitly chose a language, try that first
+    if ($uiLangSetting -ne 'System') {
+        $candidates += "Strings.$uiLangSetting.psd1"
+        
+        # If they chose English, make sure it falls back to the default Strings.psd1
+        if ($uiLangSetting -eq 'en-US') { $candidates += "Strings.psd1" }
+    }
+
+    # 2. Fallback to Windows system languages
     $uiCulture = (Get-UICulture).Name
     $sysCulture = (Get-Culture).Name
 
-    # Define the search order for localization files
-    $candidates = @(
-        "Strings.$uiCulture.psd1" # 1. Exact UI culture (e.g., Strings.zh-CN.psd1)
-        "Strings.$sysCulture.psd1" # 2. System culture
-        "Strings.psd1"             # 3. Default fallback
+    $candidates += @(
+        "Strings.$uiCulture.psd1"
+        "Strings.$sysCulture.psd1"
+        "Strings.psd1"
     )
 
-    # Remove duplicates just in case UI and System cultures are the same
+    # Remove duplicates
     $candidates = $candidates | Select-Object -Unique
 
     foreach ($file in $candidates) {
         $filePath = Join-Path -Path $Directory -ChildPath $file
         if (Test-Path -Path $filePath) {
             try {
-                # Load and return the data file
                 return Import-PowerShellDataFile -Path $filePath -ErrorAction Stop
             }
             catch {
@@ -1343,9 +1354,9 @@ function Invoke-Help {
     }
 }
 
-function Show-SetupDialog {
+function Show-SettingsDialog {
     $dlg = New-Object System.Windows.Forms.Form
-    $dlg.Text            = $script:L.SetupTitle
+    $dlg.Text            = $script:L.SettingsTitle
     $dlg.Size            = New-Object System.Drawing.Size(560, 740)
     $dlg.StartPosition   = 'CenterParent'
     $dlg.FormBorderStyle = 'FixedDialog'
@@ -1685,7 +1696,7 @@ function Show-SetupDialog {
         Update-Results $script:searchBox.Text
         Reset-Voice
         Update-VoiceUi
-        Write-Log "Setup: applied"
+        Write-Log "Settings: applied"
         
         if ($langChanged) {
             $msg = $script:L.UILangRestart
@@ -1698,13 +1709,13 @@ function Show-SetupDialog {
                 $script:form.Opacity = $orig
             } catch { }
         }
-        Write-Log "Setup: cancelled"
+        Write-Log "Settings: cancelled"
     }
     $dlg.Dispose()
 }
 
-function Invoke-Setup {
-    Show-SetupDialog
+function Invoke-Settings {
+    Show-SettingsDialog
     if ($script:searchBox -and -not $script:searchBox.IsDisposed) {
         $script:searchBox.Focus()
     }
@@ -1944,9 +1955,9 @@ function Apply-Theme {
         $script:searchBox.ForeColor = $script:colors.text
     }
     
-    if ($script:setupButton) { 
-        $script:setupButton.BackColor = $script:colors.surface
-        $script:setupButton.ForeColor = $script:colors.muted 
+    if ($script:settingsButton) { 
+        $script:settingsButton.BackColor = $script:colors.surface
+        $script:settingsButton.ForeColor = $script:colors.muted 
     }
     
     if ($script:optPanel) { $script:optPanel.BackColor = $script:colors.surface }
@@ -2179,24 +2190,24 @@ $searchBox.Font        = New-Object System.Drawing.Font('Segoe UI', 15)
 $searchBox.TabStop     = $true
 $script:searchBox = $searchBox
 
-$setupButton = New-Object System.Windows.Forms.Button
-$setupButton.Text      = [char]::ConvertFromUtf32(0x2699)  # Gear
-$setupButton.Dock      = [System.Windows.Forms.DockStyle]::Fill
-$setupButton.FlatStyle = 'Flat'
-$setupButton.FlatAppearance.BorderSize = 0
-$setupButton.BackColor = $script:colors.surface
-$setupButton.ForeColor = $script:colors.muted
-$setupButton.Font      = New-Object System.Drawing.Font('Segoe UI Symbol', 22)
-$setupButton.TabStop   = $false
-$setupButton.Cursor    = [System.Windows.Forms.Cursors]::Hand
-$script:setupButton    = $setupButton
+$settingsButton = New-Object System.Windows.Forms.Button
+$settingsButton.Text      = [char]::ConvertFromUtf32(0x2699)  # Gear
+$settingsButton.Dock      = [System.Windows.Forms.DockStyle]::Fill
+$settingsButton.FlatStyle = 'Flat'
+$settingsButton.FlatAppearance.BorderSize = 0
+$settingsButton.BackColor = $script:colors.surface
+$settingsButton.ForeColor = $script:colors.muted
+$settingsButton.Font      = New-Object System.Drawing.Font('Segoe UI Symbol', 22)
+$settingsButton.TabStop   = $false
+$settingsButton.Cursor    = [System.Windows.Forms.Cursors]::Hand
+$script:settingsButton    = $settingsButton
 
 $script:tooltip = New-Object System.Windows.Forms.ToolTip
 $script:tooltip.ShowAlways   = $true
 $script:tooltip.InitialDelay = 300
 $script:tooltip.ReshowDelay  = 100
 
-$script:tooltip.SetToolTip($setupButton, $script:L.TooltipSetup)
+$script:tooltip.SetToolTip($settingsButton, $script:L.TooltipSettings)
 
 function New-OptButton {
     param($text, $tooltip, $checked, $fontStyle)
@@ -2259,7 +2270,7 @@ $script:btnRegex.Add_Click({
 [void]$searchPanel.Controls.Add($promptIcon,  0, 0)
 [void]$searchPanel.Controls.Add($searchBox,   1, 0)
 [void]$searchPanel.Controls.Add($optPanel,    2, 0)
-[void]$searchPanel.Controls.Add($setupButton, 3, 0)
+[void]$searchPanel.Controls.Add($settingsButton, 3, 0)
 
 $searchPanel.Add_Paint({
     param($s, $e)
@@ -2400,8 +2411,8 @@ $listBox.Add_MouseDown({
 
 $listBox.Add_MouseDoubleClick({ Invoke-Selected -Item (Get-SelectedItem) })
 
-$setupButton.Add_Click({
-    Invoke-Setup
+$settingsButton.Add_Click({
+    Invoke-Settings
     if ($script:searchBox -and -not $script:searchBox.IsDisposed) {
         $script:searchBox.Focus()
     }
@@ -2424,7 +2435,7 @@ $form.Add_KeyDown({
         Invoke-Help
     } elseif ($e.KeyCode -eq [System.Windows.Forms.Keys]::F2 -and -not $e.Alt) {
         $e.SuppressKeyPress = $true
-        Invoke-Setup
+        Invoke-Settings
     } elseif ($e.KeyCode -eq [System.Windows.Forms.Keys]::F3 -and -not $e.Alt) {
         $e.SuppressKeyPress = $true
         Toggle-DesktopIcons
